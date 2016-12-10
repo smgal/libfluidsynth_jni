@@ -357,6 +357,10 @@ void delete_fluid_file_renderer(fluid_file_renderer_t* dev)
 /* ND added */
 static int (*s_fn_buffer_cb)(const char* buf, int size) = 0;
 
+#define RESULT_FAILURE (-1)
+#define RESULT_SUCCESS ( 0)
+#define RESULT_PASS    ( 1)
+
 __attribute__ ((visibility ("default"))) void nd_fluid_file_set_buffer_callback(int (*fn_cb)(const char* buf, int size))
 {
   s_fn_buffer_cb = fn_cb;
@@ -394,10 +398,18 @@ fluid_file_renderer_process_block(fluid_file_renderer_t* dev)
 	/* ND added */
 	if (s_fn_buffer_cb)
 	{
-		if (s_fn_buffer_cb((const char*)dev->buf, dev->buf_size) == 0)
-			return FLUID_OK;
-		else
+		int user_result = s_fn_buffer_cb((const char*)dev->buf, dev->buf_size);
+
+		switch (user_result)
+		{
+		case RESULT_FAILURE:
 			return FLUID_FAILED;
+		case RESULT_SUCCESS:
+			return FLUID_OK;
+		case RESULT_PASS:
+		default:
+			break;
+		}
 	}
 
 	for (offset = 0; offset < dev->buf_size; offset += n) {

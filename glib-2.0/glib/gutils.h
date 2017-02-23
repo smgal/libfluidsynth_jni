@@ -97,8 +97,9 @@ G_BEGIN_DECLS
 #  define G_INLINE_FUNC
 #  undef  G_CAN_INLINE
 #elif defined (__GNUC__) 
-#  define G_INLINE_FUNC extern inline
-#elif defined (G_CAN_INLINE) 
+//#  define G_INLINE_FUNC extern inline
+#  define G_INLINE_FUNC inline
+#elif defined (G_CAN_INLINE)
 #  define G_INLINE_FUNC static inline
 #else /* can't inline */
 #  define G_INLINE_FUNC
